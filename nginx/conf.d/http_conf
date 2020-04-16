@@ -1,0 +1,24 @@
+server {
+    listen 80;
+    listen [::]:80;
+
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+
+    server_name localhost;
+
+     location /static/ {
+            autoindex on;
+            alias /var/www/html/static/;
+    }
+
+    location / {
+            proxy_pass http://emstrack:8000;
+    }
+
+    location ~ /.well-known/acme-challenge {
+            allow all;
+            root /var/www/html;
+    }
+}
+

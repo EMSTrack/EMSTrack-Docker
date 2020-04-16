@@ -1,0 +1,6 @@
+*~
+volumes
+etc/emstrack/letsencrypt
+etc/emstrack/fixtures
+.idea
+local.env

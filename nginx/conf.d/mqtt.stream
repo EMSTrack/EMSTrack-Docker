@@ -1,0 +1,16 @@
+upstream backend {
+    server mqtt:1883;
+}
+
+server {
+
+    listen     8883 ssl;
+    proxy_pass backend;
+
+    # ssl_certificate     /etc/letsencrypt/live/emstrack.org/fullchain.pem;
+    # ssl_certificate_key /etc/letsencrypt/live/emstrack.org/privkey.pem;
+
+    ssl_certificate     /etc/certificates/localhost/server.crt;
+    ssl_certificate_key /etc/certificates/localhost/server.key;
+
+}

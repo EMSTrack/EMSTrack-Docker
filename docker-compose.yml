@@ -1,0 +1,109 @@
+version: '3'
+services:
+
+  db:
+    image: mdillon/postgis
+    container_name: db
+    restart: always
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  mqtt:
+    build:
+      context: https://github.com/EMSTrack/MQTT.git
+    restart: unless-stopped
+    container_name: mqtt
+    volumes:
+      - ./mosquitto:/mosquitto/config
+      - mosquitto-data:/mosquitto/data
+    networks:
+      - app-network
+    depends_on:
+      - emstrack
+
+  mqtt-test:
+    build:
+      context: https://github.com/EMSTrack/MQTT.git
+    restart: unless-stopped
+    container_name: mqtt-test
+    volumes:
+      - ./mosquitto-test:/mosquitto/config
+      - mosquitto-test-data:/mosquitto/data
+    networks:
+      - app-network
+    depends_on:
+      - emstrack
+
+  emstrack:
+    build:
+      context: https://github.com/EMSTrack/EMSTrack-Django.git
+    env_file:
+      - settings.env
+      #- local.env
+    container_name: emstrack
+    volumes:
+      - static:/app/deploy/static
+      - mosquitto-data:/mosquitto/data
+      - mosquitto-test-data:/mosquitto-test/data
+      - settings:/etc/emstrack
+      - certbot-localhost:/etc/certificates/localhost
+    networks:
+      - app-network
+    depends_on:
+      - db
+
+  certbot:
+    build:
+      context: https://github.com/EMSTrack/certbot.git
+    # image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - certbot-localhost:/etc/certificates/localhost
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - web-root:/var/www/html
+    command: certonly --dry-run --webroot --webroot-path=/var/www/html --email admin@emstrack.org --agree-tos --no-eff-email --force-renewal -d emstrack.org -d www.emstrack.org
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  nginx:
+    image: nginx:mainline-alpine
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8883:8883"
+      - "8884:8884"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./dhparam:/etc/ssl/certs
+      - web-root:/var/www/html
+      - static:/var/www/html/static
+      - certbot-localhost:/etc/certificates/localhost
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+    depends_on:
+      - certbot
+    networks:
+      - app-network
+
+volumes:
+  pgdata:
+  settings:
+  web-root:
+  static:
+  certbot-localhost:
+  certbot-etc:
+  certbot-var:
+  mosquitto-data:
+  mosquitto-test-data:
+
+networks:
+  app-network:
+    driver: bridge
