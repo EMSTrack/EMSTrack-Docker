@@ -12,6 +12,10 @@ server {
             alias /var/www/html/static/;
     }
 
+    location /dashboard/ {
+        proxy_pass http://dashboard:8080;
+    }
+
     location / {
             proxy_pass http://emstrack:8000;
     }

@@ -38,10 +38,10 @@ services:
 
   emstrack:
     build:
-      context: https://github.com/EMSTrack/EMSTrack-Django.git
+      context: https://github.com/EMSTrack/EMSTrack-Django.git #devel
     env_file:
       - settings.env
-      #- local.env
+      # - local.env
     container_name: emstrack
     volumes:
       - static:/app/deploy/static
@@ -67,6 +67,18 @@ services:
     command: certonly --dry-run --webroot --webroot-path=/var/www/html --email admin@emstrack.org --agree-tos --no-eff-email --force-renewal -d emstrack.org -d www.emstrack.org
     depends_on:
       - db
+    networks:
+      - app-network
+
+  dashboard:
+    build:
+      context: https://github.com/EMSTrack/EMSTrack-Dashboard.git#main
+    container_name: dashboard
+    env_file:
+      - settings.env
+      # - local.env # uncomment when running
+    ports:
+      - 8080:8080 # internal:external
     networks:
       - app-network
 
