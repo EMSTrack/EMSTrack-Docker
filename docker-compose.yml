@@ -38,7 +38,7 @@ services:
 
   emstrack:
     build:
-      context: https://github.com/EMSTrack/EMSTrack-Django.git
+      context: https://github.com/EMSTrack/EMSTrack-Django.git#devel
     env_file:
       - settings.env
       #- local.env
@@ -72,7 +72,7 @@ services:
 
   dashboard:
     build:
-      context: https://github.com/EMSTrack/EMSTrack-Dashboard.git
+      context: https://github.com/EMSTrack/EMSTrack-Dashboard.git#main
     container_name: dashboard
     env_file:
       - settings.env
