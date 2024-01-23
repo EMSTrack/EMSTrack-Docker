@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # start mosquitto
 echo '> Starting mosquitto'
@@ -7,5 +7,5 @@ echo '> Starting mosquitto'
 echo '> Mosquitto started'
 while inotifywait -e close_write /mosquitto/data/acl; do
   echo '> Restarting mosquitto...'
-  kill -SIGHUP $(cat /mosquitto/var/mosquitto.pid)
+  kill -s HUP `cat /mosquitto/var/mosquitto.pid`
 done
