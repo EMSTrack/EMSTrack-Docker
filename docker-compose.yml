@@ -11,26 +11,24 @@ services:
       - app-network
 
   mqtt:
-    build:
-      context: https://github.com/EMSTrack/MQTT.git
+    build: mosquitto-docker
     restart: unless-stopped
     container_name: mqtt
     volumes:
-      - ./mosquitto:/mosquitto/config
       - mosquitto-data:/mosquitto/data
+      - ./mosquitto:/etc/mosquitto
     networks:
       - app-network
     depends_on:
       - emstrack
 
   mqtt-test:
-    build:
-      context: https://github.com/EMSTrack/MQTT.git
+    build: mosquitto-docker
     restart: unless-stopped
     container_name: mqtt-test
     volumes:
-      - ./mosquitto-test:/mosquitto/config
       - mosquitto-test-data:/mosquitto/data
+      - ./mosquitto-test:/etc/mosquitto
     networks:
       - app-network
     depends_on:
