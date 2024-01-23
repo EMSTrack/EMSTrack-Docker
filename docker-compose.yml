@@ -11,26 +11,30 @@ services:
       - app-network
 
   mqtt:
-    build:
-      context: https://github.com/EMSTrack/MQTT.git
+    # build:
+    #   context: https://github.com/EMSTrack/MQTT.git
+    image: iegomez/mosquitto-go-auth
     restart: unless-stopped
     container_name: mqtt
     volumes:
-      - ./mosquitto:/mosquitto/config
+      # - ./mosquitto:/mosquitto/config
       - mosquitto-data:/mosquitto/data
+      - ./mosquitto:/etc/mosquitto
     networks:
       - app-network
     depends_on:
       - emstrack
 
   mqtt-test:
-    build:
-      context: https://github.com/EMSTrack/MQTT.git
+    # build:
+    #   context: https://github.com/EMSTrack/MQTT.git
+    image: iegomez/mosquitto-go-auth
     restart: unless-stopped
     container_name: mqtt-test
     volumes:
-      - ./mosquitto-test:/mosquitto/config
+      # - ./mosquitto-test:/mosquitto/config
       - mosquitto-test-data:/mosquitto/data
+      - ./mosquitto-test:/etc/mosquitto
     networks:
       - app-network
     depends_on:
@@ -38,7 +42,7 @@ services:
 
   emstrack:
     build:
-      context: https://github.com/EMSTrack/EMSTrack-Django.git#devel
+      context: https://github.com/EMSTrack/EMSTrack-Django.git#organization
     env_file:
       - settings.env
       #- local.env
